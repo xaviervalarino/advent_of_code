@@ -1,7 +1,7 @@
 import transformer from "../modules/transformer.ts";
 
-const __dirname = new URL('.', import.meta.url).pathname;
-const inputFile = __dirname + "input.txt"
+const __dirname = new URL(".", import.meta.url).pathname;
+const inputFile = __dirname + "input.txt";
 
 const totalCaloriesPerElf: number[] = [];
 
@@ -16,6 +16,8 @@ transformer(inputFile, async (readlines) => {
       index++;
     }
   }
-  const topThreeCalorieCounts = totalCaloriesPerElf.sort((a, b) => a - b).slice(totalCaloriesPerElf.length - 3);
-  return topThreeCalorieCounts.reduce((a,b) => a + b).toString()
+  const topThreeCalorieCounts = totalCaloriesPerElf
+    .sort((a, b) => a - b)
+    .slice(totalCaloriesPerElf.length - 3);
+  return topThreeCalorieCounts.reduce((a, b) => a + b).toString();
 });
