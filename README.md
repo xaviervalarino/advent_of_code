@@ -2,7 +2,7 @@
 Written in Typescript for Deno
 
 ## How to run solutions
-Running solutions outputs solution to `STDOUT`
 ```
-deno run --allow-write <day>/<solution>.ts
+deno run --allow-write <day>/<solution_{1,2}>.ts
 ```
+Running solutions file outputs solution to `STDOUT`
