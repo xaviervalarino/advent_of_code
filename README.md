@@ -3,6 +3,5 @@ Written in Typescript for Deno
 
 ## How to run solutions
 ```
-deno run --allow-write <day>/<solution_{1,2}>.ts
+deno run --allow-write ./solution/<day>.{1,2}>.ts
 ```
-Running solutions file outputs solution to `STDOUT`
