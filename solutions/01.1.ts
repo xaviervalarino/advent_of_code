@@ -1,11 +1,13 @@
-import transformer from "../modules/transformer.ts";
+/*
+ * Advent of Code
+  * Day 1 - 1st Solution
+ */
 
-const __dirname = new URL('.', import.meta.url).pathname;
-const inputFile = __dirname + "input.txt"
+import transformer from "../modules/transformer.ts";
 
 const totalCaloriesPerElf: number[] = [];
 
-transformer(inputFile, async (readlines) => {
+transformer("./inputs/01.txt", async (readlines) => {
   let index = 0;
   for await (const line of readlines) {
     if (line.length) {

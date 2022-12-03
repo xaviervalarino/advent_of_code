@@ -1,3 +1,8 @@
+/*
+ * Advent of Code
+  * Day 2 - 2nd Solution
+ */
+
 import transformer from "../modules/transformer.ts";
 
 const __dirname = new URL(".", import.meta.url).pathname;
