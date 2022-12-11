@@ -28,19 +28,12 @@ transformer("./inputs/04.txt", async (cleanupAssignments) => {
     .reduce((overlaps, group) => {
       // elf assignments
       const [shortest, longest] = group.sort((a, b) => a.length - b.length);
-      const [a, b] = shortest.sections;
-      const sectionsInLongest = (() => {
-        const [first, last] = longest.sections;
-        let current = first
-        const sections = []
-        while (!(current > last)) {
-          sections.push(current)
-          current++
-        }
-        return sections
-      })();
-      if (sectionsInLongest.indexOf(a) > -1 || sectionsInLongest.indexOf(b) > -1) {
-        overlaps++;
+      const [a, c] = shortest.sections;
+      const [b ,d] = longest.sections;
+      // ------a--------c--------
+      // b----------------------d
+      if ((a >= b && a <= d) || (c >= b && c <= d)) {
+        overlaps++
       }
       return overlaps;
     }, 0)
