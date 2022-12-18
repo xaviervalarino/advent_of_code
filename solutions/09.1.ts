@@ -7,87 +7,79 @@
 
 import transformer from "../modules/transformer.ts";
 
-type Position = [column: number, row: number];
 type Direction = "up" | "right" | "down" | "left";
 
-interface Route {
-  position: Position;
-  visited: Set<number>[];
+type Position = [x: number, y: number];
+
+interface Knot {
+  pos: Position;
+}
+
+interface KnotWithHistory extends Knot {
+  history: {
+    [key: number]: Set<number>;
+  };
 }
 
 class Rope {
-  #head: Position;
-  #tail: Route;
+  #head: Knot;
+  #tail: KnotWithHistory;
 
-  #logVisit([col, row]: Position) {
-    if (!this.#tail.visited[col]) {
-      this.#tail.visited[col] = new Set();
-    }
-    this.#tail.visited[col].add(row);
-  }
-
-  #updateTail() {
-    const prev: Position = [...this.#tail.position];
-    const [colDiff, rowDiff] = this.#head.map((v, i) => Math.abs(prev[i] - v));
-    const move = this.#head.map((v, i) => Math.sign(v - prev[i]));
-
-    if ((colDiff === 1 && rowDiff === 2) || (colDiff === 2 && rowDiff === 1)) {
-      const prev: Position = [...this.#tail.position];
-      this.#tail.position = <Position>prev.map((v, i) => v + move[i]);
-    }
-    if (colDiff === 2 && rowDiff === 0) {
-      this.#tail.position[0] += move[0];
-    }
-    if (colDiff === 0 && rowDiff === 2) {
-      this.#tail.position[1] += move[1];
-    }
-    this.#logVisit(prev);
-  }
-
-  constructor(startingPosition: Position = [0, 0]) {
-    this.#head = startingPosition;
+  constructor(startPosition: Position = [0, 0]) {
+    this.#head = { pos: [...startPosition] };
     this.#tail = {
-      position: startingPosition,
-      visited: [],
+      pos: [...startPosition],
+      history: [],
     };
+    this.#record(this.#tail.pos);
   }
 
   move(direction: Direction) {
-    const movement = {
-      up: [1, 0],
-      right: [0, 1],
-      down: [-1, 0],
-      left: [0, -1],
-    }[direction];
-    this.#head = <Position>this.#head.map((v, i) => v + movement[i]);
-    this.#updateTail();
+    switch (direction) {
+      case "up":
+        this.#head.pos[1] += 1;
+        break;
+      case "right":
+        this.#head.pos[0] += 1;
+        break;
+      case "down":
+        this.#head.pos[1] -= 1;
+        break;
+      case "left":
+        this.#head.pos[0] -= 1;
+        break;
+    }
+    this.#follow();
   }
 
-  draw() {
-    const visits = this.#tail.visited.map((row) => {
-      const arr = [];
-      for (const entry of row.values()) {
-        arr.push(entry);
-      }
-      return arr.sort((a, b) => a - b);
-    });
-    const rightmostColumns = visits.map((row) => row[row.length - 1]);
-    const length = Math.max.apply(null, rightmostColumns) + 1;
-    const graph = visits.map((row) => {
-      const arr = Array.from(new Array(length), () => ".");
-      for (const colVisits of row) {
-        arr[colVisits] = "#";
-      }
-      return arr;
-    });
-    return graph
-      .map((row) => " " + row.join(""))
-      .reverse()
-      .join("\n");
+  #follow() {
+    const [diffX, diffY] = this.#head.pos.map((v, i) =>
+      Math.abs(v - this.#tail.pos[i])
+    );
+    // not touching
+    if (diffX > 1 || diffY > 1) {
+      const [translateX, translateY] = this.#head.pos.map((v, i) =>
+        Math.sign(v - this.#tail.pos[i])
+      );
+      this.#tail.pos[0] += translateX;
+      this.#tail.pos[1] += translateY;
+      this.#record(this.#tail.pos);
+    }
   }
 
-  visitedPositionsByTail() {
-    return this.#tail.visited.reduce((count, row) => (count += row.size), 0);
+  #record([lastX, lastY]: Position) {
+    if (!this.#tail.history[lastY]) {
+      this.#tail.history[lastY] = new Set();
+    }
+    this.#tail.history[lastY].add(lastX);
+  }
+
+  history() {
+    let count = 0;
+    for (const [_, row] of Object.entries(this.#tail.history)) {
+      count += row.size;
+    }
+    return count;
   }
 }
 
@@ -105,8 +97,7 @@ transformer("./inputs/09.txt", async (seriesOfMotions) => {
     const steps = unpack(motion);
     for (const step of steps) {
       rope.move(step);
-      // console.log(rope.draw() + '\n');
     }
   }
-  return rope.visitedPositionsByTail().toString();
+  return rope.history().toString();
 });
