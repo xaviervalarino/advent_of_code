@@ -2,7 +2,7 @@
  * Advent of Code
  * Day _ - _ Solution
  * * * * * * * * * * * * * * *
- * w|!deno run --allow-read %
+ * w|!export NO_COLOR=1; deno run --allow-read %
  */
 
 import transformer from "../modules/transformer.ts";
