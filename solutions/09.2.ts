@@ -1,6 +1,6 @@
 /*
  * Advent of Code
- * Day 9 - 1st Solution
+ * Day 9 - 2nd Solution
  * * * * * * * * * * * * * * *
  * w|!deno run --allow-read %
  */
