@@ -15,21 +15,22 @@ interface MonkeyFns {
   test: Test;
 }
 
-function buildOperation([arg1, sign, arg2]: [string, "+" | "*", string]) {
+function buildOperation([arg1, sign, arg2]: [
+  string,
+  "+" | "*",
+  string
+]): Operation {
   let old: number;
-  const assign = (v: string) => () => isNaN(Number(v)) ? old : Number(v);
-  const assignArg1 = assign(arg1);
-  const assignArg2 = assign(arg2);
-  return {
-    "+": (input: number) => {
-      old = input;
-      return Math.floor(assignArg1() + assignArg2());
-    },
-    "*": (input: number) => {
-      old = input;
-      return Math.floor(assignArg1() * assignArg2());
-    },
-  }[sign];
+  const assign = (v: string) => (isNaN(Number(v)) ? old : Number(v));
+  return (input: number) => {
+    old = input;
+    const assignedArg1 = assign(arg1);
+    const assignedArg2 = assign(arg2);
+    return {
+      "+": assignedArg1 + assignedArg2,
+      "*": assignedArg1 * assignedArg2,
+    }[sign];
+  };
 }
 
 function buildTest(divisibleBy: number, ifTrue: number, ifFalse: number) {
@@ -76,64 +77,56 @@ async function parse(
   return [allStartingItems, allMonkeyFns];
 }
 
-// each turn needs to update the list of items held by a monkey
-transformer("./inputs/test.txt", async (notes) => {
+function turn(itemsHeldByMonkey: number[], { operation, test }: MonkeyFns) {
+  const outcome = new Map<number, number[]>();
+  for (const item of itemsHeldByMonkey) {
+    const updatedItem = Math.floor(operation(item) / 3);
+    const passTo = test(updatedItem);
+    if (!outcome.has(passTo)) outcome.set(passTo, <number[]>[]);
+    const itemsToPass = <number[]>outcome.get(passTo);
+    itemsToPass.push(updatedItem);
+  }
+  return outcome;
+}
+
+transformer("./inputs/11.txt", async (notes) => {
   const [initialItems, allMonkeyFns] = await parse(notes);
 
-  function calculateTurn(items: number[], fns: MonkeyFns) {
-    const { operation, test } = fns;
-    return function turn(
-      callback: (tossToMonkey: number, updatedItem: number) => void,
-      i = 0
-    ) {
-      const updatedItem = operation(items[i]);
-      const tossToMonkey = test(updatedItem);
-      callback(tossToMonkey, updatedItem);
-      i++
-      if (i === items.length) return;
-      turn(callback, i)
-    };
+  function round(allItems: number[][], ) {
+    // each turn needs to update the items list before the next monkey's turn begins
+    const updatedItems: number[][] = [...allItems];
+    const monkeyBusiness: number[] = [];
+    for (const i in allItems) {
+      const outcome = turn(updatedItems[i], allMonkeyFns[i]);
+      monkeyBusiness[i] = updatedItems[i].length
+      // clear out items that where passed during this turn
+      updatedItems[i] = [];
+      for (const [passTo, items] of outcome) {
+        if (items.length) {
+          const monkeyItems = updatedItems[passTo];
+          updatedItems[passTo] = monkeyItems.concat(items);
+        }
+      }
+    }
+    return { updatedItems, monkeyBusiness };
   }
 
-  function calculateRound(
-    itemsPerMonkey: number[][],
-    inspected: number[] = [],
-    i = 0
-  ): [number[], number[][]] {
-    const outcome = [...itemsPerMonkey];
-    const fns = allMonkeyFns[i];
-    const turns = calculateTurn(outcome[i], fns);
-    turns((tossToMonkey: number, updatedItem: number) =>
-      outcome[tossToMonkey].push(updatedItem)
-    );
-
-    if (!inspected[i]) inspected[i] = 0;
-    inspected[i] += outcome[i].length;
-    // clear tossed items for this monkey
-    outcome[i] = [];
-    i++;
-
-    if (i === outcome.length) return [inspected, outcome];
-    return calculateRound(outcome, inspected, i);
-  }
-
-  function rounds(
-    count: number,
-    items: number[][],
-    inspections: number[] = []
-  ): number[] {
-    const [inspected, outcome] = calculateRound(items);
-    inspections = inspected.map((v, i) => v + (inspections[i] || 0));
-    console.log(count);
-    count--;
-    if (!count) return inspections;
-    return rounds(count, outcome, inspections);
+  function calculateRounds(length: number, initialItems: number[][]) {
+    let updatedItems = [...initialItems];
+    let monkeyBusiness: number[] = [];
+    for (let i = 0; i < length; i++) {
+      const outcome = round(updatedItems);
+      updatedItems = outcome.updatedItems
+      monkeyBusiness = outcome.monkeyBusiness.map((item, i) => {
+        return (monkeyBusiness[i] || 0) + item;
+      });
+    }
+    // most active to least active
+    return monkeyBusiness.sort((a, b) => b - a);
   }
 
   // two most active monkeys
-  const [monkey1, monkey2] = rounds(9000, initialItems).sort((a, b) => b - a);
-
-  console.log(monkey1, monkey2);
+  const [monkey1, monkey2] = calculateRounds(20, initialItems);
   // level of monkey business
   return (monkey1 * monkey2).toString();
 });
