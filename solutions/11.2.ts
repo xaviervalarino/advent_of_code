@@ -44,10 +44,10 @@ function monkeyFactory(notesOnMonkey: string[]): [number[], MonkeyFns] {
     return accumulator;
   }, <string[]>[]);
   const monkeyStartingItems = notes[0].split(", ").map((v) => Number(v));
+
+  const monkeyTest = <[string, "+" | "*", string]>notes[1].replace("new = ", "").split(" ")
   const monkeyFns = {
-    operation: buildOperation(
-      <[string, "+" | "*", string]>notes[1].replace("new = ", "").split(" ")
-    ),
+    operation: buildOperation(monkeyTest),
     test: buildTest(
       +notes[2].replace("divisible by ", ""),
       +notes[3].replace("throw to monkey ", ""),
@@ -77,30 +77,36 @@ async function parse(
   return [allStartingItems, allMonkeyFns];
 }
 
-function turn(itemsHeldByMonkey: number[], { operation, test }: MonkeyFns) {
-  const outcome = new Map<number, number[]>();
-  for (const item of itemsHeldByMonkey) {
-    const updatedItem = Math.floor(operation(item) / 3);
-    const passTo = test(updatedItem);
-    if (!outcome.has(passTo)) outcome.set(passTo, <number[]>[]);
-    const itemsToPass = <number[]>outcome.get(passTo);
-    itemsToPass.push(updatedItem);
+class CalculateRounds {
+  #items: number[][];
+  #fns: MonkeyFns[];
+  constructor(initialItems: number[][], allMonkeyFns: MonkeyFns[]) {
+    this.#items = initialItems;
+    this.#fns = allMonkeyFns;
   }
-  return outcome;
-}
 
-transformer("./inputs/11.txt", async (notes) => {
-  const [initialItems, allMonkeyFns] = await parse(notes);
+  #turn(itemsHeldByMonkey: number[], monkeyFns: MonkeyFns) {
+    const { operation, test } = monkeyFns;
+    const outcome = new Map<number, number[]>();
+    for (const item of itemsHeldByMonkey) {
+      const updatedItem = Math.floor(operation(item) / 3);
+      const passTo = test(updatedItem);
+      if (!outcome.has(passTo)) outcome.set(passTo, <number[]>[]);
+      const itemsToPass = <number[]>outcome.get(passTo);
+      itemsToPass.push(updatedItem);
+    }
+    return outcome;
+  }
 
-  function round(allItems: number[][], ) {
+  #round(allItems: number[][]) {
     // each turn needs to update the items list before the next monkey's turn begins
     const updatedItems: number[][] = [...allItems];
     const monkeyBusiness: number[] = [];
-    for (const i in allItems) {
-      const outcome = turn(updatedItems[i], allMonkeyFns[i]);
-      monkeyBusiness[i] = updatedItems[i].length
+    for (let monkeyID = 0; monkeyID < allItems.length; monkeyID++) {
+      const outcome = this.#turn(updatedItems[monkeyID], this.#fns[monkeyID]);
+      monkeyBusiness[monkeyID] = updatedItems[monkeyID].length;
       // clear out items that where passed during this turn
-      updatedItems[i] = [];
+      updatedItems[monkeyID] = [];
       for (const [passTo, items] of outcome) {
         if (items.length) {
           const monkeyItems = updatedItems[passTo];
@@ -111,22 +117,25 @@ transformer("./inputs/11.txt", async (notes) => {
     return { updatedItems, monkeyBusiness };
   }
 
-  function calculateRounds(length: number, initialItems: number[][]) {
-    let updatedItems = [...initialItems];
+  calculate(rounds: number) {
+    let updatedItems = [...this.#items];
     let monkeyBusiness: number[] = [];
-    for (let i = 0; i < length; i++) {
-      const outcome = round(updatedItems);
-      updatedItems = outcome.updatedItems
+    for (let i = 0; i < rounds; i++) {
+      const outcome = this.#round(updatedItems);
+      updatedItems = outcome.updatedItems;
       monkeyBusiness = outcome.monkeyBusiness.map((item, i) => {
         return (monkeyBusiness[i] || 0) + item;
       });
     }
-    // most active to least active
+    // most active to least active monkey
     return monkeyBusiness.sort((a, b) => b - a);
   }
+}
 
+transformer("./inputs/11.txt", async (notes) => {
+  const rounds = new CalculateRounds(...(await parse(notes)));
   // two most active monkeys
-  const [monkey1, monkey2] = calculateRounds(20, initialItems);
+  const [monkey1, monkey2] = rounds.calculate(20);
   // level of monkey business
   return (monkey1 * monkey2).toString();
 });
