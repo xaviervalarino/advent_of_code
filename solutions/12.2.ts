@@ -76,9 +76,9 @@ function bfs(start: string[], end: string, graph: Map<string, string[]>) {
 
   while (queue.length) {
     const [currentNode, [...path]] = <[string, string[]]>queue.shift();
-    // record this current node as part of the path used to get to destinations
-    if (!start.includes(currentNode)) path.push(currentNode);
     if (currentNode === end) return path;
+    // record this current node as part of the path used to get to destinations
+    path.push(currentNode);
     if (!visited.has(currentNode) && graph.has(currentNode)) {
       const destinations = graph
         .get(currentNode)!
