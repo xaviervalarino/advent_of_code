@@ -12,6 +12,8 @@ type Topography = {
   [key: string]: number;
 };
 
+type QueueItem = [string, string[]];
+
 function testVertices(x: number, y: number) {
   const up = [x, y + 1];
   const down = [x, y - 1];
@@ -38,7 +40,7 @@ function createGraph(topography: Topography) {
 }
 
 async function parse(readlines: AsyncIterableIterator<string>) {
-  const startPositions: string[] = [];
+  const start: string[] = [];
   let end!: string;
   const topography: Topography = {};
   let y = 0;
@@ -48,7 +50,7 @@ async function parse(readlines: AsyncIterableIterator<string>) {
       const key = `${x},${y}`;
       let elevation: number;
       if (l === "S" || l === "a") {
-        startPositions.push(key);
+        start.push(key);
         elevation = 0;
       } else if (l === "E") {
         end = key;
@@ -62,39 +64,34 @@ async function parse(readlines: AsyncIterableIterator<string>) {
     y++;
   }
   const graph = createGraph(topography);
-  return { startPositions, end, graph };
+  return { start, end, graph };
 }
 
-function bfsShorterThan(graph: Map<string, string[]>) {
-  // returns shorter path, or undefined if the found path is not shorter
-  return (start: string, end: string, shortest: number) => {
-    const queue: [string, string[]][] = [[start, []]];
-    const visited = new Set<string>();
+function bfs(start: string[], end: string, graph: Map<string, string[]>) {
+  const visited = new Set<string>();
+  const queue = start.map((start): QueueItem => {
+    const path: string[] = [];
+    return <QueueItem>[start, path];
+  });
 
-    while (queue.length) {
-      const [currentNode, [...path]] = <[string, string[]]>queue.shift();
-      // record this current node as part of the path used to get to destinations
-      if (currentNode !== start) path.push(currentNode);
-      // kill search if it's longer than the previous result
-      if (path.length > shortest) return
-      if (currentNode === end) return path;
-      if (!visited.has(currentNode) && graph.has(currentNode)) {
-        const destinations = graph
-          .get(currentNode)!
-          .map((node): [string, string[]] => [node, path]);
-        queue.push(...destinations);
-      }
-      visited.add(currentNode);
+  while (queue.length) {
+    const [currentNode, [...path]] = <[string, string[]]>queue.shift();
+    // record this current node as part of the path used to get to destinations
+    if (!start.includes(currentNode)) path.push(currentNode);
+    if (currentNode === end) return path;
+    if (!visited.has(currentNode) && graph.has(currentNode)) {
+      const destinations = graph
+        .get(currentNode)!
+        .map((node): [string, string[]] => [node, path]);
+      queue.push(...destinations);
     }
-  };
+    visited.add(currentNode);
+  }
 }
 
 transformer("./inputs/12.txt", async (readlines) => {
-  const { startPositions, end, graph } = await parse(readlines);
-  const bfs = bfsShorterThan(graph);
-  const shortestPath = startPositions.reduce((shortest, start) => {
-    const path = bfs(start, end, shortest)?.length;
-    return path ? path : shortest;
-  }, Infinity);
-  return shortestPath.toString();
+  const { start, end, graph } = await parse(readlines);
+  const shortestPath = bfs(start, end, graph);
+  if (!shortestPath) throw new Error("No path found");
+  return shortestPath.length.toString();
 });
