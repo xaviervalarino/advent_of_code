@@ -28,12 +28,10 @@ function createGraph(topography: Topography) {
     const elevation = topography[square];
     const [x, y] = square.split(",").map((v) => +v);
     // get edges that have an elevation that can be moved to
-    const edges = testVertices(x, y)
-      .filter((key) => {
-        const testElevation = topography[key];
-        return testElevation <= elevation + 1;
-      })
-      .map((edge) => edge.toString());
+    const edges = testVertices(x, y).filter((key) => {
+      const testElevation = topography[key];
+      return testElevation <= elevation + 1;
+    });
     graph.set(square, edges);
   }
   return graph;
