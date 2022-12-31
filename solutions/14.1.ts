@@ -105,6 +105,7 @@ function _draw(rockCoors: Set<string>, sandCoors: Set<string>, bottom: number) {
 }
 
 transformer("./inputs/14.txt", async (readlines) => {
+  let result = ''
   const { rocks, bottom } = await caveScanner(readlines);
   const sand = new Set<string>();
 
@@ -119,9 +120,12 @@ transformer("./inputs/14.txt", async (readlines) => {
     }
   }
 
-  // visualization
-  // w|!export NO_COLOR=1; deno run --allow-read % > outputs/14.1.txt
-  console.log(_draw(rocks, sand, bottom));
+  // Visualization
+  // w|!export NO_COLOR=1; deno run --allow-read % --viz > outputs/14.1.txt
+  if (Deno.args.includes('--viz')) {
+    result += _draw(rocks, sand, bottom)
+  }
 
-  return sand.size.toString();
+  result += '\n' + sand.size
+  return result
 });
