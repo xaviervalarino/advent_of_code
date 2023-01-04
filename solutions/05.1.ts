@@ -2,7 +2,7 @@
  * Advent of Code
  * Day 5 - 1st Solution
  * * * * * * * * * * * * * * *
- * w|!deno run --allow-read %
+ * w|!./run %
  */
 
 import transformer from "../modules/transformer.ts";

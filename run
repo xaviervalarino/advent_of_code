@@ -1,0 +1,16 @@
+#!/usr/bin/env deno run --allow-run
+
+let cmd = ["deno", "run", "--allow-read"];
+const filename = Deno.args[Deno.args.length - 1];
+
+if (Deno.args.includes("--viz")) {
+  cmd = [...cmd, "--allow-write", "--allow-env", filename, "--viz"];
+} else {
+  cmd = [...cmd, filename];
+}
+
+const p = Deno.run({ cmd, env: { NO_COLOR: "1" } });
+const { code } = await p.status();
+Deno.exit(code);
+
+// vi: filetype=typescript

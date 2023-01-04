@@ -2,7 +2,7 @@
  * Advent of Code
  * Day 14 - 2nd Solution
  * * * * * * * * * * * * * * *
- * w|!export NO_COLOR=1; deno run --allow-read %
+ * w|!./run %
  */
 
 import transformer from "../modules/transformer.ts";
@@ -95,7 +95,7 @@ transformer("./inputs/14.txt", async (readlines) => {
   }
 
   // Visualization
-  // w|!export NO_COLOR=1; deno run --allow-read --allow-write --allow-env % --viz
+  // w|!./run --viz %
   if (Deno.args.includes("--viz")) _draw(rocks, sand);
 
   return sand.size.toString();
