@@ -1,7 +1,7 @@
 /*
  * Advent of Code
  * Day 4 - 2nd Solution
- * * * * * * * * * * * * * * *
+ * * * * * * * * * * * *
  * w|!./run %
  */
 

@@ -1,7 +1,7 @@
 /*
  * Advent of Code
  * Day 11 - 2nd Solution
- * * * * * * * * * * * * * * *
+ * * * * * * * * * * * *
  * w|!./run %
  */
 

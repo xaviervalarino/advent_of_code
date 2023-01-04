@@ -1,7 +1,7 @@
 /*
  * Advent of Code
  * Day _ - _ Solution
- * * * * * * * * * * * * * * *
+ * * * * * * * * * * * *
  * w|!./run %
  */
 
