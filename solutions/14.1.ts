@@ -6,6 +6,7 @@
  */
 
 import transformer from "../modules/transformer.ts";
+import graphToPng from "../modules/graph-to-png.ts";
 
 type Coordinates = { x: number; y: number };
 
@@ -74,38 +75,18 @@ function simulate(rocks: Set<string>, sand: Set<string>, limit: number) {
   return last;
 }
 
-function _draw(rockCoors: Set<string>, sandCoors: Set<string>, bottom: number) {
-  const parseCoors = (structure: Set<string>) => {
-    return Array.from(structure, (coor) => {
-      return coor.split(",").map((axis) => +axis);
+function _draw(rocks: Set<string>, sand: Set<string>) {
+  const createMarks = (symbol: string, structures: Set<string>) => {
+    return Array.from(structures, (coor) => {
+      const [x, y] = coor.split(",").map((axis) => +axis);
+      return { x, y, symbol };
     });
   };
-  const rocks = parseCoors(rockCoors).sort();
-  const sands = parseCoors(sandCoors).sort();
-
-  // get the edges of the grid and add two cells of buffer
-  const left = rocks[0][0] - 2;
-  const right = rocks[rocks.length - 1][0] + 2;
-
-  const grid = Array.from(new Array(bottom + 1), () =>
-    Array.from(new Array(right - left), () => " ")
-  );
-
-  for (const rock of rocks) {
-    let [x, y] = rock;
-    x = x - left;
-    grid[y][x] = "▓";
-  }
-  for (const sand of sands) {
-    let [x, y] = sand;
-    x = x - left;
-    grid[y][x] = "o";
-  }
-  return grid.map((line) => line.join("")).join("\n");
+  const chartmarks = [...createMarks("▓", rocks), ...createMarks("o", sand)];
+  graphToPng(chartmarks, "./outputs/14.1.png");
 }
 
 transformer("./inputs/14.txt", async (readlines) => {
-  let result = ''
   const { rocks, bottom } = await caveScanner(readlines);
   const sand = new Set<string>();
 
@@ -121,11 +102,8 @@ transformer("./inputs/14.txt", async (readlines) => {
   }
 
   // Visualization
-  // w|!export NO_COLOR=1; deno run --allow-read % --viz > outputs/14.1.txt
-  if (Deno.args.includes('--viz')) {
-    result += _draw(rocks, sand, bottom)
-  }
+  // w|!export NO_COLOR=1; deno run --allow-read --allow-write --allow-env % --viz
+  if (Deno.args.includes("--viz")) _draw(rocks, sand);
 
-  result += '\n' + sand.size
-  return result
+  return sand.size.toString();
 });
