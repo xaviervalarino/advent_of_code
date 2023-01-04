@@ -11,18 +11,6 @@
     "https://deno.land/std@0.167.0/io/types.d.ts": "790d3a3fa6b7f298d4cfbcf8bfd9d4be595c1b1acaa3eebb3009177df98bf93c",
     "https://deno.land/std@0.167.0/io/util.ts": "294d163962e3310bd9485d3315c183dc3d0da1e6ddf23495c682f8e17e0413a8",
     "https://deno.land/std@0.167.0/io/writers.ts": "e2f9277e96cc197209a2c12a29c1ed58e6162ab3e4d72f6cfad7b96f30f26685",
-    "https://deno.land/std@0.167.0/streams/_common.ts": "a931bdab61de705bbfeda25d7bcf8e6edbba37492f90737b3c2889604313df46",
-    "https://deno.land/std@0.167.0/streams/conversion.ts": "2d2127a08be7ba28ef26c6ff1b2fec442109e5aac09c79cbe36fb0883d51645f",
-    "https://deno.land/std@0.167.0/streams/copy.ts": "9a972a4befee3306095e9bb058a5a4d73b681df6ca088d7209f9a0736271aadc",
-    "https://deno.land/std@0.167.0/streams/iterate_reader.ts": "26adde791b4206a8abbbd6365a8845b88aef396c1fd642066ec8e8480675e6a1",
-    "https://deno.land/std@0.167.0/streams/read_all.ts": "52c733b63ca52af7d78326228529d7d629d5b3bb7c34c0a0261b5a6ecc209e73",
-    "https://deno.land/std@0.167.0/streams/readable_stream_from_iterable.ts": "eaa03bf3b7fbffa665d3d9c30435dcce3437c67559f97eaccc58995d3efcf8cd",
-    "https://deno.land/std@0.167.0/streams/readable_stream_from_reader.ts": "fa1e01839d214826a1547f108f2858d9f97b267ccf2523bf08c6db3e07ae3124",
-    "https://deno.land/std@0.167.0/streams/reader_from_iterable.ts": "91ebe9cfed2422b7193e222e3479d31f7906171df4f94e0d8df35877b9d15e69",
-    "https://deno.land/std@0.167.0/streams/reader_from_stream_reader.ts": "88043a2b2932443e1b5133264283ded6872bec0604d4e69235ebf73e5e9ddde3",
-    "https://deno.land/std@0.167.0/streams/to_transform_stream.ts": "f3fea34e2d338d9022079d2e756a834b4c233758ad2bcdb43ace326b06c8d36c",
-    "https://deno.land/std@0.167.0/streams/writable_stream_from_writer.ts": "ae8daf9f524c449485235900746d195c4d845bb452aed679e67288a9b6848f3b",
     "https://deno.land/std@0.167.0/streams/write_all.ts": "7525aa90e34a2bb56d094403ad9c0e31e7db87a47cb556e6dc0404e6deca084c",
-    "https://deno.land/std@0.167.0/streams/writer_from_stream_writer.ts": "eee7964dc30acc74a02fc52f98f3a4fd46d1382d7897859b21eeebbd0a754ec6"
   }
 }
