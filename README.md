@@ -3,5 +3,6 @@ Written in Typescript for Deno
 
 ## How to run solutions
 ```
-deno run --allow-read ./solution/<day>.<{1,2}>.ts
+./run ./solution/<day>.<{1,2}>.ts
 ```
+Some solutions will also output an image when run with `--viz` flag.
