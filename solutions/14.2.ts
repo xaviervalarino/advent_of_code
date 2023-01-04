@@ -79,7 +79,7 @@ function _draw(rocks: Set<string>, sand: Set<string>) {
     });
   };
   const chartmarks = [...createMarks("▓", rocks), ...createMarks("o", sand)];
-  graphToPng(chartmarks, "./outputs/14.2.png");
+  graphToPng(chartmarks, "./img-outputs/14.2.png");
 }
 
 transformer("./inputs/14.txt", async (readlines) => {
