@@ -58,7 +58,7 @@ function getBounds(gridmarks: Gridmark[]) {
   );
 }
 
-async function textToPng(gridmarks: Gridmark[], outFile: string) {
+async function graphToPng(gridmarks: Gridmark[], outFile?: string) {
   const { lower, upper } = getBounds(gridmarks);
   const width = upper.x - lower.x;
   const height = upper.y - lower.y;
@@ -72,4 +72,4 @@ async function textToPng(gridmarks: Gridmark[], outFile: string) {
   await Deno.writeFile(outFile, canvas.toBuffer());
 }
 
-export default textToPng;
+export default graphToPng;
