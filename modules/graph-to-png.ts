@@ -16,9 +16,9 @@ const MARGIN = 20;
 const FONT = {
   name: "Menlo",
   path: "/System/Library/Fonts/Menlo.ttc",
-  size: 8,
-  width: 5,
-  height: 8,
+  size: 12,
+  width: 8,
+  height: 12,
 };
 
 async function setupCanvas(
